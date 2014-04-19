@@ -10,7 +10,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+
+// ALL C++/CX classes MUST MUST MUST be in this namespace!!!!!!
 using PhoneDirect3DXamlAppComponent;
+using ClientConnectCallback;
+
+// My netwoking communication classes
+//using GameClient; // STUPID!!! why didnt they tell me not to use my own namespaces!!!
+// The tech name of this stuff is C++/CX
 
 namespace PhoneDirect3DXamlAppInterop
 {
@@ -22,6 +29,9 @@ namespace PhoneDirect3DXamlAppInterop
         public MainPage()
         {
             InitializeComponent();
+            // hide this item by default
+            this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+            this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
         }
 
         private void DrawingSurfaceBackground_Loaded(object sender, RoutedEventArgs e)
@@ -49,6 +59,92 @@ namespace PhoneDirect3DXamlAppInterop
                 DrawingSurfaceBackground.SetBackgroundContentProvider(m_d3dBackground.CreateContentProvider());
                 DrawingSurfaceBackground.SetBackgroundManipulationHandler(m_d3dBackground);
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OnJoinGame(object sender, RoutedEventArgs e)
+        {
+            // attempt to connect to game server...
+            string error = "";
+            var client = new GameClient();
+            client.ConnectThroughSocket(this.ServerIPField.Text, out error);
+            
+            if (error != "")
+            {
+                MessageBox.Show("Error: " + error);
+                // if failed... say so
+                this.StatusTextBlock.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                // if successfull, hide all interface buttons
+                this.ServerIPField.Visibility = System.Windows.Visibility.Collapsed;
+                this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+                this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
+                this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
+                this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OnHostGame(object sender, RoutedEventArgs e)
+        {
+            // launch the game server, wait for a client to connect
+            string ip;
+            string error;
+
+            var callbackObject = new CClientConnectCallback();
+            callbackObject.Init(Dispatcher, this);
+
+            var winsockListener = new GameServer();
+
+            //setup the callback object so the winsock thread can tell us when it gets connections
+            winsockListener.SetClientCallBack(callbackObject);
+
+            //start the server listening
+            winsockListener.StartSocketServer(out ip, out error);
+            if (error != "")
+                MessageBox.Show("Error:" + error);
+            else
+            {
+                //server ip address
+                this.HostIPTextBlock.Text = "Host IP Address: " + ip + "\nWaiting for Player 2...";
+
+                // hide the standard interface show the IP to join
+                this.ServerIPField.Visibility = System.Windows.Visibility.Collapsed;
+                this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+                this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
+
+                this.HostButton.IsEnabled = false;
+                this.HostIPTextBlock.Visibility = System.Windows.Visibility.Visible;
+            }
+          
+        }
+
+        private void ServerIPChanged(object sender, TextChangedEventArgs e)
+        {
+            this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+        }
+        
+        // called by Client Connect Call back on a client connection
+        public void OnNotifyClientConnection(string ipAddress)
+        {
+            // hide all GUI interfaces & begin the game
+            this.ServerIPField.Visibility = System.Windows.Visibility.Collapsed;
+            this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+            this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
+            this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
+            this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
         }
     }
 }
