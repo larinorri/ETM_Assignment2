@@ -87,6 +87,9 @@ namespace PhoneDirect3DXamlAppInterop
                 this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
                 this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
                 this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+
+                // begin the game as the CLIENT
+                this.m_d3dBackground.StartGame(false);
             }
             
 
@@ -145,6 +148,9 @@ namespace PhoneDirect3DXamlAppInterop
             this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
             this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
             this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+
+            // begin the game as the HOST
+            this.m_d3dBackground.StartGame(true);
         }
     }
 }

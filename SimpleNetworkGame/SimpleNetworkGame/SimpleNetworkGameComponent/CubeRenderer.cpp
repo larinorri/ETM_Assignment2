@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "CubeRenderer.h"
+#include "NetworkEvents.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -8,6 +9,8 @@ using namespace Windows::UI::Core;
 
 CubeRenderer::CubeRenderer() :
 	m_loadingComplete(false),
+	m_connected(false),
+	m_host(false),
 	m_indexCount(0)
 {
 }
@@ -167,7 +170,41 @@ void CubeRenderer::Update(float timeTotal, float timeDelta)
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
-	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(timeTotal * XM_PIDIV4)));
+	
+	// only the host should perform game logic..
+	if (m_host)
+		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(timeTotal * XM_PIDIV4)));
+
+	if (m_connected)
+	{
+		// If we are the server & we are connected... lets transmit game object orientation
+		if (m_host)
+		{
+			// create event
+			NetworkEvents::EVENT_DATA cubeLocation;
+			cubeLocation.ID = GAME_EVENT::SYNC_CUBE;
+			memcpy_s(cubeLocation.matrix, sizeof(XMFLOAT4X4), &m_constantBufferData.model, sizeof(XMFLOAT4X4));
+			// transmit event
+			NetworkEvents::GetInstance().PushOutgoingEvent(&cubeLocation);
+		}
+		else // if instead we are the client... receive the state of the game objects
+		{
+			NetworkEvents::EVENT_DATA what;
+			ZeroMemory(&what, sizeof(NetworkEvents::EVENT_DATA));
+			// if we have an event pending we must deal with it
+			if (NetworkEvents::GetInstance().PopIncomingEvent(&what))
+			{
+				switch (what.ID)
+				{
+				case GAME_EVENT::SYNC_CUBE :
+					// match server cube
+					memcpy_s(&m_constantBufferData.model, sizeof(XMFLOAT4X4), what.matrix, sizeof(XMFLOAT4X4));
+					//XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixIdentity());
+					break;
+				}// end switch
+			}// end if
+		}// end else
+	}
 }
 
 void CubeRenderer::Render()

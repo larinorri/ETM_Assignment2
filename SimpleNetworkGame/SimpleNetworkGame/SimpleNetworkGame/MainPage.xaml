@@ -16,7 +16,7 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
     <DrawingSurfaceBackgroundGrid x:Name="DrawingSurfaceBackground" Loaded="DrawingSurfaceBackground_Loaded">
         <Button x:Name="HostButton" Content="HOST GAME" Margin="10,10,10,681" Click="OnHostGame"/>
-        <TextBox x:Name="ServerIPField" HorizontalAlignment="Left" Height="68" Margin="10,609,0,0" TextWrapping="Wrap" Text="Server IP Here" VerticalAlignment="Top" Width="460" TextAlignment="Center" TextChanged="ServerIPChanged"/>
+        <TextBox x:Name="ServerIPField" HorizontalAlignment="Left" Height="68" Margin="10,609,0,0" TextWrapping="Wrap" Text="192.168.1.5" VerticalAlignment="Top" Width="460" TextAlignment="Center" TextChanged="ServerIPChanged"/>
         <Button x:Name="JoinButton" Content="JOIN GAME" Height="81" Margin="10,677,0,10" Click="OnJoinGame" HorizontalAlignment="Left" Width="460"/>
         <TextBlock x:Name="HostIPTextBlock" HorizontalAlignment="Left" Height="75" Margin="10,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" TextAlignment="Center" FontSize="24">
         	<Run Text="Host IP Address:  192.168.1.1"/>

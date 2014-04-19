@@ -139,6 +139,7 @@
     <ClInclude Include="BasicTimer.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="NetworkEvents.h" />
     <ClInclude Include="SimpleNetworkGameComponent.h" />
     <ClInclude Include="CubeRenderer.h" />
     <ClInclude Include="DirectXHelper.h" />
@@ -149,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="NetworkEvents.cpp" />
     <ClCompile Include="SimpleNetworkGameComponent.cpp" />
     <ClCompile Include="CubeRenderer.cpp" />
     <ClCompile Include="Direct3DBase.cpp" />

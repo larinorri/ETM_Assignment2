@@ -27,6 +27,9 @@ public:
 	property Windows::Foundation::Size NativeResolution;
 	property Windows::Foundation::Size RenderResolution;
 
+	// notify internal objects to start the game
+	void StartGame(bool isHost) { m_renderer->StartGame(isHost); }
+
 protected:
 	// Event Handlers
 	void OnPointerPressed(Windows::Phone::Input::Interop::DrawingSurfaceManipulationHost^ sender, Windows::UI::Core::PointerEventArgs^ args);

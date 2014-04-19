@@ -29,8 +29,11 @@ public:
 	// Method for updating time-dependent objects.
 	void Update(float timeTotal, float timeDelta);
 
+	// Method for notifying current game has started
+	void StartGame(bool isHost) { m_connected = true; m_host = isHost; }
+
 private:
-	bool m_loadingComplete;
+	bool m_loadingComplete, m_connected, m_host;
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;

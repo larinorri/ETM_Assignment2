@@ -1,6 +1,7 @@
 // WinsockClient.cpp
 #include "pch.h"
 #include "GameClient.h"
+#include "NetworkEvents.h"
 //#include "windows.h"
 
 // Need to link with Ws2_32.lib
@@ -73,8 +74,39 @@ int GameClient::ConnectThroughSocket(String^ hostForConn, String^* errMsg)
 
 	// here we will spawn a thread receiving & sending events from the server
 	// the only events we send will be input events & a quit event. Server will handle main game play logic
+	using namespace Windows::System::Threading;
+	ThreadPool::RunAsync(ref new WorkItemHandler([sockfd, hostToConnect](Windows::Foundation::IAsyncAction^ operation)
+	{
+		// this lets a socket be non-blocking (recv will not wait)
+		u_long iMode = 1;
+		ioctlsocket(sockfd, FIONBIO, &iMode);
 
+		// here we will loop sending any availbale client events to our server & listen for server instructions
+		NetworkEvents::EVENT_DATA sendEvent, receiveEvent;
+		memset(&sendEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
+		memset(&receiveEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
+		while (receiveEvent.ID != GAME_EVENT::NETWORK_KILL)
+		{
+			// attempt to receive data from server (only look for events)
+			if (recv(sockfd, (char*)&receiveEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == sizeof(NetworkEvents::EVENT_DATA))
+			{
+				// looks like we got somethin...
+				NetworkEvents::GetInstance().PushIncomingEvent(&receiveEvent);
+			}
+			// if any data is waiting to be sent, send it to the server
+			if (NetworkEvents::GetInstance().PopOutgoingEvent(&sendEvent))
+			{
+				if (send(sockfd, (const char*)&sendEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == -1)
+					perror("could not send to server, event dropped");
+			}
+		}
+		// shutdown listen socket
+		closesocket(sockfd);
+		//delete the character array holding our target listener
+		delete[] hostToConnect;
 
+	}));
+	
 	//Send or Receive data from the opened socket...
 	//  if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
 	//*errMsg = "recv error";
@@ -83,9 +115,7 @@ int GameClient::ConnectThroughSocket(String^ hostForConn, String^* errMsg)
 	//  }
 	//...
 
-	closesocket(sockfd);
 
-	//delete the character array holding our target listener
-	delete[] hostToConnect;
+	// back to UI while thread runs...
 	return 0;
 }

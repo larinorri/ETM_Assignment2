@@ -1,6 +1,7 @@
 // WinsockListener.cpp
 #include "pch.h"
 #include "GameServer.h"
+#include "NetworkEvents.h"
 
 using namespace PhoneDirect3DXamlAppComponent;
 
@@ -115,12 +116,33 @@ void GameServer::StartSocketServer(String^* UsingIpAddress, String^* errMessage)
 			//tell the UI thread we got a connection
 			callbackObject->ClientConnectedServer(clientIpAddress);
 
-			// here we will loop sending any availbale server events to our client
+			// this lets a socket be non-blocking (recv will not wait)
+			u_long iMode = 1;
+			ioctlsocket(clientConnectedSocket, FIONBIO, &iMode);
 
+			// here we will loop sending any availbale server events to our client
+			NetworkEvents::EVENT_DATA sendEvent, receiveEvent;
+			memset(&sendEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
+			memset(&receiveEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
+			// loop until told otherwise
+			while (receiveEvent.ID != GAME_EVENT::NETWORK_KILL)
+			{
+				// if any data is waiting to be sent, send it to the client
+				if (NetworkEvents::GetInstance().PopOutgoingEvent(&sendEvent))
+				{
+					if (send(clientConnectedSocket, (const char*)&sendEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == -1)
+						perror("could not send to client, event dropped");
+				}
+				// attempt to receive data from client (only look for events)
+				if (recv(clientConnectedSocket, (char*)&receiveEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == sizeof(NetworkEvents::EVENT_DATA))
+				{
+					// looks like we got somethin...
+					NetworkEvents::GetInstance().PushIncomingEvent(&receiveEvent);
+				}
+			}
 			//send the client some data
-			if (send(clientConnectedSocket, "Server says hi!", 15, 0) == -1)
-				perror("send");
-			
+			//if (send(clientConnectedSocket, "Server says hi!", 15, 0) == -1)
+			//	perror("send");
 			
 			closesocket(clientConnectedSocket);
 			clientConnectedSocket = NULL;
