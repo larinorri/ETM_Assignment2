@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "BasicTimer.h"
-#include "CubeRenderer.h"
+#include "GameRenderer.h"
 #include <DrawingSurfaceNative.h>
 
 namespace PhoneDirect3DXamlAppComponent
@@ -44,7 +44,7 @@ internal:
 	HRESULT Draw(_In_ ID3D11Device1* device, _In_ ID3D11DeviceContext1* context, _In_ ID3D11RenderTargetView* renderTargetView);
 
 private:
-	CubeRenderer^ m_renderer;
+	GameRenderer^ m_renderer;
 	BasicTimer^ m_timer;
 };
 

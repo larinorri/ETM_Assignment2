@@ -15,9 +15,6 @@
     <ClCompile Include="Direct3DBase.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="CubeRenderer.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="GameClient.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
@@ -26,6 +23,9 @@
     </ClCompile>
     <ClCompile Include="NetworkEvents.cpp">
       <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRenderer.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -37,9 +37,6 @@
     <ClInclude Include="Direct3DBase.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="CubeRenderer.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="GameClient.h">
       <Filter>Networking</Filter>
     </ClInclude>
@@ -48,6 +45,9 @@
     </ClInclude>
     <ClInclude Include="NetworkEvents.h">
       <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRenderer.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

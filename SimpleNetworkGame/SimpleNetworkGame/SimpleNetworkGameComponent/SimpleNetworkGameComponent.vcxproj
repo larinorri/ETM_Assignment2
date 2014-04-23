@@ -141,7 +141,7 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="NetworkEvents.h" />
     <ClInclude Include="SimpleNetworkGameComponent.h" />
-    <ClInclude Include="CubeRenderer.h" />
+    <ClInclude Include="GameRenderer.h" />
     <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="Direct3DBase.h" />
     <ClInclude Include="Direct3DContentProvider.h" />
@@ -152,7 +152,7 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="NetworkEvents.cpp" />
     <ClCompile Include="SimpleNetworkGameComponent.cpp" />
-    <ClCompile Include="CubeRenderer.cpp" />
+    <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="Direct3DBase.cpp" />
     <ClCompile Include="Direct3DContentProvider.cpp" />
     <ClCompile Include="pch.cpp">

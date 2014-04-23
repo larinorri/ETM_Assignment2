@@ -15,15 +15,20 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <DrawingSurfaceBackgroundGrid x:Name="DrawingSurfaceBackground" Loaded="DrawingSurfaceBackground_Loaded">
-        <Button x:Name="HostButton" Content="HOST GAME" Margin="10,10,10,681" Click="OnHostGame"/>
-        <TextBox x:Name="ServerIPField" HorizontalAlignment="Left" Height="68" Margin="10,609,0,0" TextWrapping="Wrap" Text="192.168.1.5" VerticalAlignment="Top" Width="460" TextAlignment="Center" TextChanged="ServerIPChanged"/>
-        <Button x:Name="JoinButton" Content="JOIN GAME" Height="81" Margin="10,677,0,10" Click="OnJoinGame" HorizontalAlignment="Left" Width="460"/>
-        <TextBlock x:Name="HostIPTextBlock" HorizontalAlignment="Left" Height="75" Margin="10,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" TextAlignment="Center" FontSize="24">
+        <Button x:Name="HostButton" Content="HOST GAME" Margin="10,10,10,681" Click="OnHostGame" Foreground="Black" BorderBrush="Black"/>
+        <TextBox x:Name="ServerIPField" HorizontalAlignment="Left" Height="68" Margin="10,609,0,0" TextWrapping="Wrap" Text="192.168.1.5" VerticalAlignment="Top" Width="460" TextAlignment="Center" TextChanged="ServerIPChanged" Foreground="Black"/>
+        <Button x:Name="JoinButton" Content="JOIN GAME" Height="81" Margin="10,677,0,10" Click="OnJoinGame" HorizontalAlignment="Left" Width="460" BorderBrush="Black" Foreground="Black" Background="Transparent"/>
+        <TextBlock x:Name="HostIPTextBlock" HorizontalAlignment="Left" Height="75" Margin="10,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" TextAlignment="Center" FontSize="24" Foreground="Black">
         	<Run Text="Host IP Address:  192.168.1.1"/>
         	<LineBreak/>
         	<Run Text="Waiting For Player 2..."/>
         </TextBlock>
         <TextBlock x:Name="StatusTextBlock" HorizontalAlignment="Left" Height="29" Margin="10,575,0,0" TextWrapping="Wrap" Text="ERROR: Failed To Join Game Server" VerticalAlignment="Top" Width="460" TextAlignment="Center" Foreground="Red"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="179" Width="460" TextAlignment="Center" FontSize="72" FontFamily="Times New Roman" Foreground="Black">
+        	<Run Text="TREASURE"/>
+        	<LineBreak/>
+        	<Run Text="RACER"/>
+        </TextBlock>
     </DrawingSurfaceBackgroundGrid>
 
 </phone:PhoneApplicationPage>
