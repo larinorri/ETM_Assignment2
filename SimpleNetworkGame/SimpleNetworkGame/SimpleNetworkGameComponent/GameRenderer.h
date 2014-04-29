@@ -2,19 +2,29 @@
 
 #include "Direct3DBase.h"
 
+// 32 diffrent shading options
+enum SHADING 
+{
+	MENU = 0,
+	TEXTURED = 1,
+	LIGHTING = 2,
+};
+
 struct ModelViewProjectionConstantBuffer
 {
 	DirectX::XMFLOAT4X4 model;
 	DirectX::XMFLOAT4X4 view;
 	DirectX::XMFLOAT4X4 projection;
 	DirectX::XMFLOAT2	time;
-	DirectX::XMFLOAT2	padding;
+	unsigned int		shading;
+	unsigned int		padding;
 };
 
-struct VertexPositionColor
+struct Vertex
 {
 	DirectX::XMFLOAT3 pos;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT3 normal;
+	DirectX::XMFLOAT3 texcoord;
 };
 
 // This class renders all objects in the game
@@ -32,7 +42,10 @@ public:
 	void Update(float timeTotal, float timeDelta);
 
 	// Method for notifying current game has started
-	void StartGame(bool isHost) { m_connected = true; m_host = isHost; }
+	void StartGame(bool isHost);
+
+	// re-seeds the level, transmits it to the other player
+	void RandomizeLevel();
 
 private:
 	bool m_loadingComplete, m_connected, m_host;
@@ -55,7 +68,29 @@ private:
 	// Uber pixel shader which handles various materials
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> uberPS;
 
+	// various textures
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> floorSRV, wallSRV, celingSRV;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> wrapSampler;
 
 	uint32 m_indexCount;
 	ModelViewProjectionConstantBuffer m_constantBufferData;
+
+	// the dungeon is a 100x100 cell level
+	unsigned char theDungeon[100][100];
+
 };
+
+
+// treasure racer plan:
+// allocate grid, each cell is empty or filled  
+// render floor & celing of dungeon using texture repeat.(if time, clip to frustum corners)
+// loop through cells, non-empty cells have 4 walls, test vs frustum & draw.
+
+// player is the camera in world space, attatch flash light (spotlight)
+// Use the compass to control the player. (don't walk through walls...) 
+
+// draw a compass 2D graphic. (rotate based on sensor)
+// Pick a random location for the treasure...
+// When you shine the light on the treasure you win! send lose event to opponent.
+// 
+//

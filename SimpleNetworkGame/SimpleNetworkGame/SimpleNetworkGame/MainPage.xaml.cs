@@ -102,6 +102,10 @@ namespace PhoneDirect3DXamlAppInterop
 
         private void OnHostGame(object sender, RoutedEventArgs e)
         {
+            // shor circuit for now
+            OnNotifyClientConnection("");
+            return;
+
             // launch the game server, wait for a client to connect
             string ip;
             string error;
@@ -129,7 +133,7 @@ namespace PhoneDirect3DXamlAppInterop
                 this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
 
                 this.HostButton.IsEnabled = false;
-                this.HostIPTextBlock.Visibility = System.Windows.Visibility.Visible;
+                this.HostIPTextBlock.Visibility = System.Windows.Visibility.Visible;     
             }
           
         }
@@ -148,6 +152,7 @@ namespace PhoneDirect3DXamlAppInterop
             this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
             this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
             this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+            this.TitleTextBlock.Visibility = System.Windows.Visibility.Collapsed;
 
             // begin the game as the HOST
             this.m_d3dBackground.StartGame(true);

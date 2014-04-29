@@ -27,11 +27,12 @@
     <ClCompile Include="GameRenderer.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicTimer.h" />
     <ClInclude Include="SimpleNetworkGameComponent.h" />
-    <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="Direct3DContentProvider.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Direct3DBase.h">
@@ -49,6 +50,15 @@
     <ClInclude Include="GameRenderer.h">
       <Filter>Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="DirectXHelper.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicTimer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Networking">
@@ -60,5 +70,22 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{08306dc2-0758-4881-94ac-d6dc87ef983c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{3be993fe-c574-47a9-9b1c-30f93272a31b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{5ac4a87f-70e4-4c26-87ec-22f961efdbb1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\DungeonCeling.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Textures\DungeonFloor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Textures\DungeonWall.dds">
+      <Filter>Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

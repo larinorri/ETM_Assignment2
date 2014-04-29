@@ -24,7 +24,7 @@
         	<Run Text="Waiting For Player 2..."/>
         </TextBlock>
         <TextBlock x:Name="StatusTextBlock" HorizontalAlignment="Left" Height="29" Margin="10,575,0,0" TextWrapping="Wrap" Text="ERROR: Failed To Join Game Server" VerticalAlignment="Top" Width="460" TextAlignment="Center" Foreground="Red"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="179" Width="460" TextAlignment="Center" FontSize="72" FontFamily="Times New Roman" Foreground="Black">
+        <TextBlock x:Name="TitleTextBlock" HorizontalAlignment="Left" Margin="10,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="179" Width="460" TextAlignment="Center" FontSize="72" FontFamily="Times New Roman" Foreground="Black">
         	<Run Text="TREASURE"/>
         	<LineBreak/>
         	<Run Text="RACER"/>
