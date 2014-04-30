@@ -29,6 +29,7 @@
         	<LineBreak/>
         	<Run Text="RACER"/>
         </TextBlock>
+        <Image x:Name="CompassImage" Height="204" Margin="139,92,139,0" VerticalAlignment="Top" Source="/Assets/freedo_Compass_rose.png"/>
     </DrawingSurfaceBackgroundGrid>
 
 </phone:PhoneApplicationPage>

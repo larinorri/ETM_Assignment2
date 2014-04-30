@@ -23,9 +23,11 @@ public:
 
 	event RequestAdditionalFrameHandler^ RequestAdditionalFrame;
 
-	property Windows::Foundation::Size WindowBounds;
-	property Windows::Foundation::Size NativeResolution;
-	property Windows::Foundation::Size RenderResolution;
+	property Windows::Foundation::Size	WindowBounds;
+	property Windows::Foundation::Size	NativeResolution;
+	property Windows::Foundation::Size	RenderResolution;
+	// Sent to gameplay code for navigation
+	property double						MagneticNorth;
 
 	// notify internal objects to start the game
 	void StartGame(bool isHost) { m_renderer->StartGame(isHost); }

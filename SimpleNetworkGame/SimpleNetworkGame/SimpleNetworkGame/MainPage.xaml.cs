@@ -10,10 +10,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+// used for compass
+using Windows.Devices.Sensors;
+using System.Windows.Threading;
 
 // ALL C++/CX classes MUST MUST MUST be in this namespace!!!!!!
 using PhoneDirect3DXamlAppComponent;
 using ClientConnectCallback;
+
 
 // My netwoking communication classes
 //using GameClient; // STUPID!!! why didnt they tell me not to use my own namespaces!!!
@@ -23,7 +27,13 @@ namespace PhoneDirect3DXamlAppInterop
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        // C++ game renderer + more
         private Direct3DBackground m_d3dBackground = null;
+
+        // compass data (based on MSDN example)
+        private Compass _compass;
+        private uint _desiredReportInterval;
+        private DispatcherTimer _dispatcherTimer;
 
         // Constructor
         public MainPage()
@@ -32,6 +42,41 @@ namespace PhoneDirect3DXamlAppInterop
             // hide this item by default
             this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
             this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+
+            // construct compass rendering
+            _compass = Compass.GetDefault();
+            if (_compass != null)
+            {
+                // Select a report interval that is both suitable for the purposes of the app and supported by the sensor.
+                // This value will be used later to activate the sensor.
+                uint minReportInterval = _compass.MinimumReportInterval;
+                _desiredReportInterval = minReportInterval > 16 ? minReportInterval : 16;
+                _compass.ReportInterval = _desiredReportInterval;
+
+                // Set up a DispatchTimer
+                _dispatcherTimer = new DispatcherTimer();
+                _dispatcherTimer.Tick += DisplayCurrentReading;
+                _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)_desiredReportInterval);
+
+                _dispatcherTimer.Start();
+            }
+        }
+
+        // called when the compass has new data to transmit
+        private void DisplayCurrentReading(object sender, object args)
+        {
+            CompassReading reading = _compass.GetCurrentReading();
+            if (reading != null)
+            {
+                RotateTransform north = new RotateTransform();
+                // allow compass roataions
+                north.CenterX = 100; north.CenterY = 100;
+                north.Angle = -reading.HeadingMagneticNorth;
+                CompassImage.RenderTransform = north;
+                // send updated compass reading to game
+                if (m_d3dBackground != null)
+                    m_d3dBackground.MagneticNorth = reading.HeadingMagneticNorth;
+            }
         }
 
         private void DrawingSurfaceBackground_Loaded(object sender, RoutedEventArgs e)
@@ -39,6 +84,9 @@ namespace PhoneDirect3DXamlAppInterop
             if (m_d3dBackground == null)
             {
                 m_d3dBackground = new Direct3DBackground();
+
+                // double for tracking compass
+                m_d3dBackground.MagneticNorth = new double();
 
                 // Set window bounds in dips
                 m_d3dBackground.WindowBounds = new Windows.Foundation.Size(

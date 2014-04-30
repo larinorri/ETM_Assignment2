@@ -18,8 +18,10 @@ struct VertexShaderOutput
 {
 	float4 pos : SV_POSITION;
 	float3 uvw : TEXCOORD;
+	float3 nrm : NORMAL;
 	// must be passed for older shader models
 	float3 posC : POSITION0;
+	float3 posW : POSITION1;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
@@ -30,11 +32,16 @@ VertexShaderOutput main(VertexShaderInput input)
 	// Transform the vertex position into projected space.
 	// these should all be identity for the menu
 	pos = mul(pos, model);
+	output.posW = pos.xyz;
+
 	pos = mul(pos, view);
 	pos = mul(pos, projection);
 
 	output.pos = pos;
 	output.posC = pos.xyz / pos.w;
+
+	// world space normal
+	output.nrm = mul(input.nrm, model);
 	
 	// Pass through the uvw without modification.
 	output.uvw = input.uvw;

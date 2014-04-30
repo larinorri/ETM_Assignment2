@@ -72,6 +72,8 @@ void Direct3DBackground::Disconnect()
 HRESULT Direct3DBackground::PrepareResources(_In_ const LARGE_INTEGER* presentTargetTime, _Inout_ DrawingSurfaceSizeF* desiredRenderTargetSize)
 {
 	m_timer->Update();
+	// transfer compass readings from C#
+	m_renderer->UpdateCompass(MagneticNorth);
 	m_renderer->Update(m_timer->Total, m_timer->Delta);
 
 	desiredRenderTargetSize->width = RenderResolution.Width;

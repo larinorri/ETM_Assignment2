@@ -15,6 +15,15 @@ GameRenderer::GameRenderer() :
 	m_host(false),
 	m_indexCount(0)
 {
+	// Initialize non device dependent resources
+	lightConstantData.lanterns[0].coneDir = XMFLOAT3(0, 0, 1);
+	lightConstantData.lanterns[0].innerCone = 0.9f;
+	lightConstantData.lanterns[0].lightPos = XMFLOAT3(0, 0, 0);
+	lightConstantData.lanterns[0].outerCone = 0.8f;
+	lightConstantData.lanterns[0].lightColor = XMFLOAT3(1, 1, 1);
+	lightConstantData.lanterns[0].radius = 10;
+
+	XMStoreFloat4x4(&playerLocal, XMMatrixIdentity());
 }
 
 void GameRenderer::CreateDeviceResources()
@@ -70,6 +79,15 @@ void GameRenderer::CreateDeviceResources()
 				&m_constantBuffer
 				)
 			);
+
+		constantBufferDesc.ByteWidth = sizeof(LightDataConstantBuffer);
+		DX::ThrowIfFailed(
+			m_d3dDevice->CreateBuffer(
+			&constantBufferDesc,
+			nullptr,
+			&lightConstantBuffer
+			)
+			);
 	});
 
 	// create all geometry
@@ -112,25 +130,25 @@ void GameRenderer::CreateDeviceResources()
 			{ XMFLOAT3(50, 0, -50), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(100.0f, 1.0f, 0.0f) },
 			{ XMFLOAT3(50, 1, -50), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(100.0f, 0.0f, 0.0f) },
 			// inner 4 sided cell
-			{ XMFLOAT3(-0.5f, 0, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 0, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
-			{ XMFLOAT3(-0.5f, 1, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 1, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(0, 0, 1), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1, 0, 1), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(0, 1, 1), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1, 1, 1), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
-			{ XMFLOAT3(-0.5f, 0, -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-0.5f, 1, -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 0, -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 1, -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(0, 0, 0), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0, 1, 0), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1, 0, 0), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(1, 1, 0), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
-			{ XMFLOAT3(-0.5f, 0, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-0.5f, 0,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
-			{ XMFLOAT3(-0.5f, 1, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-0.5f, 1,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(0, 0, 0), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0, 0, 1), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(0, 1, 0), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0, 1, 1), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
-			{ XMFLOAT3( 0.5f, 0,  0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 0, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 1,  0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3( 0.5f, 1, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(1, 0, 1), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1, 0, 0), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(1, 1, 1), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1, 1, 0), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
 		};
 
@@ -182,7 +200,8 @@ void GameRenderer::CreateWindowSizeDependentResources()
 void GameRenderer::StartGame(bool isHost)
 {
 	m_connected = true; 
-	RandomizeLevel();
+	if(isHost)
+		RandomizeLevel();
 	m_host = isHost;
 }
 
@@ -199,6 +218,21 @@ void GameRenderer::RandomizeLevel()
 			theDungeon[z][x] = (rand() % 5) ? 0 : 1;
 		}
 	// transmit dungeon to opposing player (seed only)
+
+	// re-randomize
+	srand((unsigned int)time(nullptr));
+		
+	// find a random spot for the player to start
+	int startCellX, startCellZ;
+	do
+	{
+		startCellX = rand() % 100;
+		startCellZ = rand() % 100;
+	} while (theDungeon[startCellZ][startCellX]);
+	// move matrix to this location
+	XMMATRIX move = XMMatrixTranslation(startCellX - 50, 0.5f, startCellZ - 50);
+	move = XMMatrixRotationY(XM_2PI * (rand() / float(RAND_MAX))) * move;
+	XMStoreFloat4x4(&playerLocal, move);
 }
 
 void GameRenderer::Update(float timeTotal, float timeDelta)
@@ -214,13 +248,55 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 	// update time variables
 	m_constantBufferData.time.x = timeTotal;
 	m_constantBufferData.time.y = timeDelta;
-	
+
 	// only the host should perform game logic..
 	if (m_host)
 	{
 		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixIdentity());
-		XMStoreFloat4x4(&m_constantBufferData.view, 
-			XMMatrixTranspose(XMMatrixInverse(0,XMMatrixRotationY(timeTotal) * XMMatrixTranslation(0, 0.5, -10))));
+		//XMStoreFloat4x4(&m_constantBufferData.view, 
+		//	XMMatrixTranspose(XMMatrixInverse(0,XMMatrixRotationY(timeTotal) * XMMatrixTranslation(0, 0.5, -10))));
+
+		// amount of movement for testing penetration of walls
+		const float penetration = 0.25f;
+
+		// rotate player 1 based on compass
+		XMMATRIX racer = XMLoadFloat4x4(&playerLocal);
+		// rotate based on magnetic north
+		XMVECTOR currPos = racer.r[3];
+		racer = XMMatrixRotationY(XMConvertToRadians(magneticNorth));
+		racer.r[3] = currPos;
+
+		// create Z axis world space velocity vector
+		XMVECTOR velocityW = racer.r[2];
+		velocityW = XMVectorSetW(velocityW, 0); // trim any W velocity
+		// convert current MOVED position into floating point grid location
+		XMVECTOR newPosW = racer.r[3] + velocityW * penetration;
+		
+		// Preform X & Z colission probes, remove velocity component from vector on collission
+		int currCellX = XMVectorGetX(racer.r[3]) + 50;
+		int currCellZ = XMVectorGetZ(racer.r[3]) + 50;
+		int nextCellX = XMVectorGetX(newPosW) + 50;
+		int nextCellZ = XMVectorGetZ(newPosW) + 50;
+		// test X collission
+		if (nextCellX >= 100 || nextCellX < 0 || theDungeon[currCellZ][nextCellX])
+			velocityW = XMVectorSetX(velocityW, 0); // remove X velocity
+		// test Z collission
+		if (nextCellZ >= 100 || nextCellZ < 0 || theDungeon[nextCellZ][currCellX])
+			velocityW = XMVectorSetZ(velocityW, 0); // remove Z velocity
+
+		// Apply velocity to player
+		racer.r[3] += velocityW * timeDelta;
+
+		// preform sine bob
+		XMVECTOR travel = XMVector3Length(velocityW * timeDelta);
+		static float running = 0; running += XMVectorGetX(travel) * 15;
+		racer.r[3] = XMVectorSetY(racer.r[3], 0.5f + cosf(running) * 0.01f);
+
+		// attatch to camera
+		XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(0, racer)) );
+		// store back in player
+		XMStoreFloat4x4(&playerLocal, racer);
+
 	}
 	if (m_connected)
 	{
@@ -252,6 +328,16 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 			}// end if
 		}// end else
 	}
+
+
+	// after game logic is run, update ligthing variables
+	XMMATRIX cWorld = XMLoadFloat4x4(&m_constantBufferData.view);
+	cWorld = XMMatrixTranspose(cWorld);
+	cWorld = XMMatrixInverse(0, cWorld);
+	
+	XMStoreFloat3(&lightConstantData.lanterns[0].coneDir, cWorld.r[2]);
+	XMStoreFloat3(&lightConstantData.lanterns[0].lightPos, cWorld.r[3]);
+
 }
 
 void GameRenderer::Render()
@@ -279,8 +365,13 @@ void GameRenderer::Render()
 	m_d3dContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
 	m_d3dContext->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 	m_d3dContext->PSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
+	m_d3dContext->PSSetConstantBuffers(1, 1, lightConstantBuffer.GetAddressOf());
 	m_d3dContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 	m_d3dContext->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
+
+	// copy light data to GPU
+	m_d3dContext->UpdateSubresource(lightConstantBuffer.Get(), 0, NULL, &lightConstantData, 0, 0);
+
 
 	// if we are not yet connected render the main menu
 	if (!m_connected)
@@ -301,7 +392,7 @@ void GameRenderer::Render()
 	else // render the game scene
 	{
 		// send actual matricies to be used
-		m_constantBufferData.shading = SHADING::TEXTURED;
+		m_constantBufferData.shading = SHADING::LIGHTING;
 		m_d3dContext->UpdateSubresource(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0);
 		
 		// render Floor
