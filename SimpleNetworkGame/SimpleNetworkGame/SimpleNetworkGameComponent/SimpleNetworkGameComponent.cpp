@@ -74,7 +74,7 @@ HRESULT Direct3DBackground::PrepareResources(_In_ const LARGE_INTEGER* presentTa
 	m_timer->Update();
 	
 	// transfer compass readings from C# (if we have any)
-	if (!_isnan(MagneticNorth))
+	if (MagneticNorth != 0) // only update when reading changed
 		m_renderer->UpdateCompass(MagneticNorth);
 	
 	m_renderer->Update(m_timer->Total, m_timer->Delta);

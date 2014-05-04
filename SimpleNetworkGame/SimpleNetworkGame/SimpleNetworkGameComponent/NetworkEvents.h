@@ -13,8 +13,8 @@ enum GAME_EVENT
 	SEED_LEVEL,			// synchronizes the client cube to the server cube
 	START_GAME,			// Clients are connected and intialized
 	GAME_OVER,			// stops game play, contains win state
-	PLAYER_LOC,			// Remote player has moved, preform visual update
 	COMPASS_SEND,		// Allows you to sync with another players compass (for testing)
+	PLAYER_LOC,			// Remote player has moved, preform visual update
 };
 
 // Singleton which is used by the game server & client to send and receive events
@@ -31,7 +31,7 @@ public:
 			///char			message[256];		// added this to hopefully speed up TCP, need to switch to UDP
 			
 			float			matrix[16];			// some kind of matrix
-			double			floatingPoint64;	// precise floating point value	
+			double			floatingPoint64;	// precise floating point value (Beware little endian)	
 			unsigned int	integerUnsigned;	// unsigned numerical value 
 			int				integerSigned;		// signed numerical value 
 		};

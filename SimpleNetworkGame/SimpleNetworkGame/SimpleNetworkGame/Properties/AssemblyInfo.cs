@@ -6,12 +6,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PhoneDirect3DXamlAppInterop")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TreasureRacer_LNorri_ETM2")]
+[assembly: AssemblyDescription("A simple networked game")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("7thGateSoftware")]
 [assembly: AssemblyProduct("PhoneDirect3DXamlAppInterop")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

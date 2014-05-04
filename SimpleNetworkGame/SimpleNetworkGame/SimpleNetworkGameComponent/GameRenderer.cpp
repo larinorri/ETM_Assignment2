@@ -323,14 +323,14 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 		racer = XMMatrixRotationY(XMConvertToRadians(magneticNorth));
 		racer.r[3] = currPos;
 		
-		// TEMP CODE (emulator has no comapss so we transfer our own)
-		if (!m_host)
+		// TEMP CODE (emulator has no compass so we transfer our own)
+		if (m_host == true)
 		{
-			NetworkEvents::EVENT_DATA remoteCompass;
-			remoteCompass.ID = GAME_EVENT::COMPASS_SEND;
-			remoteCompass.floatingPoint64 = magneticNorth;// our compass reading
-			NetworkEvents::GetInstance().PushOutgoingEvent(&remoteCompass);
-			//racer = XMMatrixRotationY(timeTotal * 0.25f) * racer;
+			racer = XMMatrixRotationY(timeDelta * 0.2f) * racer;
+			//NetworkEvents::EVENT_DATA remoteCompass;
+			//remoteCompass.ID = GAME_EVENT::COMPASS_SEND;
+			//remoteCompass.matrix[0] = magneticNorth;// our compass reading
+			//NetworkEvents::GetInstance().PushOutgoingEvent(&remoteCompass);
 		}
 
 		// create Z axis world space velocity vector
@@ -408,45 +408,26 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 				NetworkEvents::GetInstance().PushIncomingEvent(&gameOver);
 			}
 		}
-		else // if instead we are the client... receive the state of the game objects
-		{
-			NetworkEvents::EVENT_DATA what;
-			ZeroMemory(&what, sizeof(NetworkEvents::EVENT_DATA));
-			// if we have an event pending we must deal with it
-			if (NetworkEvents::GetInstance().PopIncomingEvent(&what))
-			{
-				switch (what.ID)
-				{
-				case GAME_EVENT::SEED_LEVEL :
-					
-					// build game level
-					RandomizeLevel(what.integerUnsigned);
-					// UnPause the game
-					m_pause = false;
-					break;
-				}// end switch
-			}// end if
-		}// end else
 
-		// Handle ALL generic events
+		// Handle ALL network events
 		NetworkEvents::EVENT_DATA what;
 		ZeroMemory(&what, sizeof(NetworkEvents::EVENT_DATA));
 		// if we have an event pending we must deal with it
-		if (NetworkEvents::GetInstance().PopIncomingEvent(&what))
+		while (NetworkEvents::GetInstance().PopIncomingEvent(&what))
 		{
 			switch (what.ID)
 			{
-			case GAME_EVENT::PLAYER_LOC :
-
-				// Update remote player (used to visualize the remote spotlight)
-				memcpy_s(&playerRemote, sizeof(XMFLOAT4X4), what.matrix, sizeof(XMFLOAT4X4));
-				
-				break;
-
-			case GAME_EVENT::COMPASS_SEND :
+			case GAME_EVENT::COMPASS_SEND:
 
 				// use the incoming compass value as our own
-				UpdateCompass(what.floatingPoint64);
+				magneticNorth = what.matrix[0];
+				break;
+
+			case GAME_EVENT::PLAYER_LOC :
+				
+				// Update remote player (used to visualize the remote spotlight)
+				memcpy_s(&playerRemote, sizeof(XMFLOAT4X4), what.matrix, sizeof(XMFLOAT4X4));
+		
 				break;
 
 			case GAME_EVENT::GAME_OVER :
@@ -464,9 +445,17 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 					_callbackObject->GameOver(status);
 				}
 				break;
+
+			case GAME_EVENT::SEED_LEVEL:
+
+				// build game level
+				RandomizeLevel(what.integerUnsigned);
+				// UnPause the game
+				m_pause = false;
+				break;	
 			}// end switch
-		}// end if
-	}
+		}// end while
+	}// end network events
 
 	// after game logic is run, update ligthing variables
 	XMMATRIX cWorld = XMLoadFloat4x4(&m_constantBufferData.view);

@@ -5,7 +5,7 @@
 #include <tchar.h>
 
 #define PORT "4533" // the port client will be connecting to 
-#define MAXDATASIZE 64 // max number of bytes we can get at once 
+#define MAXDATASIZE 128 // max number of bytes we can get at once 
 
 using namespace Platform;
 

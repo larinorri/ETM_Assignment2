@@ -92,7 +92,7 @@ namespace PhoneDirect3DXamlAppInterop
 
                 // double for tracking compass
                 m_d3dBackground.MagneticNorth = new double();
-                m_d3dBackground.MagneticNorth = double.NaN; // initialize to a NON-Reading
+                m_d3dBackground.MagneticNorth = 0; // initialize to a NON-Reading
 
                 // Set window bounds in dips
                 m_d3dBackground.WindowBounds = new Windows.Foundation.Size(
