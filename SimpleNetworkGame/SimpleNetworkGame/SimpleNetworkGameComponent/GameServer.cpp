@@ -57,8 +57,31 @@ void GameServer::StartSocketServer(String^* UsingIpAddress, String^* errMessage)
 		return;
 	}
 
+	//// set socket options no delay & reuse socket
+	BOOL bOptVal = TRUE;
+	int bOptLen = sizeof (BOOL);
+	int iResult;// = setsockopt(listenSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&bOptVal, bOptLen);
+	//if (iResult == SOCKET_ERROR) {
+	//	*errMessage = "Failed to set socket options with error:";
+	//	*errMessage += WSAGetLastError();
+	//	freeaddrinfo(servinfo);
+	//	closesocket(listenSocket);
+	//	WSACleanup();
+	//	return;
+	//}
+	//// No delay
+	//iResult = setsockopt(listenSocket, IPPROTO_TCP, TCP_NODELAY, (char *)&bOptVal, bOptLen);
+	//if (iResult == SOCKET_ERROR) {
+	//	*errMessage = "Failed to set socket options with error:";
+	//	*errMessage += WSAGetLastError();
+	//	freeaddrinfo(servinfo);
+	//	closesocket(listenSocket);
+	//	WSACleanup();
+	//	return;
+	//}
+
 	// bind
-	int iResult = bind(listenSocket, servinfo->ai_addr, (int)servinfo->ai_addrlen);
+	iResult = bind(listenSocket, servinfo->ai_addr, (int)servinfo->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
 		*errMessage = "Bind failed with error:";
 		*errMessage += WSAGetLastError();
@@ -125,7 +148,7 @@ void GameServer::StartSocketServer(String^* UsingIpAddress, String^* errMessage)
 			memset(&sendEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
 			memset(&receiveEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
 			// loop until told otherwise
-			while (receiveEvent.ID != GAME_EVENT::NETWORK_KILL)
+			while (sendEvent.ID != GAME_EVENT::NETWORK_KILL)
 			{
 				// if any data is waiting to be sent, send it to the client
 				if (NetworkEvents::GetInstance().PopOutgoingEvent(&sendEvent))
@@ -140,16 +163,21 @@ void GameServer::StartSocketServer(String^* UsingIpAddress, String^* errMessage)
 					NetworkEvents::GetInstance().PushIncomingEvent(&receiveEvent);
 				}
 			}
-			//send the client some data
-			//if (send(clientConnectedSocket, "Server says hi!", 15, 0) == -1)
-			//	perror("send");
+			//send any remaining outgoing events
+			while (NetworkEvents::GetInstance().PopOutgoingEvent(&sendEvent))
+			{
+				if (send(clientConnectedSocket, (const char*)&sendEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == -1)
+					perror("could not send to client, event dropped");
+			}
 			
 			closesocket(clientConnectedSocket);
 			clientConnectedSocket = NULL;
+			break; // leave this connection
 		}
 
 		closesocket(listenSocket);
 		WSACleanup();
+		//assert(0);
 
 	}));
 

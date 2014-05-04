@@ -10,8 +10,8 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 struct VertexShaderInput
 {
 	float3 pos : POSITION;
-	float3 nrm : NORMAL;
 	float3 uvw : TEXCOORD;
+	float3 nrm : NORMAL;
 };
 
 struct VertexShaderOutput

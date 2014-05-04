@@ -40,3 +40,15 @@ bool NetworkEvents::PopOutgoingEvent(EVENT_DATA *_send) // used by network threa
 	outgoingEvents.pop();
 	return true;
 }
+void NetworkEvents::ClearOutgoingEvents() // call on game reset
+{
+	std::unique_lock<std::mutex> block(lockOutgoing);
+	while (!outgoingEvents.empty())
+		outgoingEvents.pop();
+}
+void NetworkEvents::ClearIncomingEvents() // call on game reset
+{
+	std::unique_lock<std::mutex> block(lockIncoming);
+	while (!incomingEvents.empty())
+		incomingEvents.pop();
+}

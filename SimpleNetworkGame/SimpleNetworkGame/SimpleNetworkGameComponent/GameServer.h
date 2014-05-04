@@ -8,7 +8,7 @@
 using namespace Platform;
 
 #define PORT "4533"  // the port users will be connecting to
-#define BACKLOG 10     // how many pending connections queue will hold
+#define BACKLOG 10    // how many pending connections queue will hold
 
 // classes based on windows 8 networking MSDN examples
 namespace PhoneDirect3DXamlAppComponent

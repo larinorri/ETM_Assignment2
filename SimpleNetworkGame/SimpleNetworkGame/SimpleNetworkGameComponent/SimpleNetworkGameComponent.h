@@ -7,7 +7,6 @@
 
 namespace PhoneDirect3DXamlAppComponent
 {
-
 public delegate void RequestAdditionalFrameHandler();
 
 [Windows::Foundation::Metadata::WebHostHidden]
@@ -31,6 +30,15 @@ public:
 
 	// notify internal objects to start the game
 	void StartGame(bool isHost) { m_renderer->StartGame(isHost); }
+	
+	// Go back to the main menu
+	void ResetGame() { m_renderer->ResetGame(); }
+
+	// set callback routine for game over condition
+	void SetGameOverCallback(IGameEndedCallback^ callbackObject)
+	{
+		m_renderer->SetCallBack(callbackObject);
+	}
 
 protected:
 	// Event Handlers

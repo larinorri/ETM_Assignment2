@@ -18,7 +18,7 @@
         <Button x:Name="HostButton" Content="HOST GAME" Margin="10,10,10,681" Click="OnHostGame" Foreground="Black" BorderBrush="Black"/>
         <TextBox x:Name="ServerIPField" HorizontalAlignment="Left" Height="68" Margin="10,609,0,0" TextWrapping="Wrap" Text="192.168.1.5" VerticalAlignment="Top" Width="460" TextAlignment="Center" TextChanged="ServerIPChanged" Foreground="Black"/>
         <Button x:Name="JoinButton" Content="JOIN GAME" Height="81" Margin="10,677,0,10" Click="OnJoinGame" HorizontalAlignment="Left" Width="460" BorderBrush="Black" Foreground="Black" Background="Transparent"/>
-        <TextBlock x:Name="HostIPTextBlock" HorizontalAlignment="Left" Height="75" Margin="10,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" TextAlignment="Center" FontSize="24" Foreground="Black">
+        <TextBlock x:Name="HostIPTextBlock" HorizontalAlignment="Left" Height="75" Margin="10,480,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="460" TextAlignment="Center" FontSize="24" Foreground="Black">
         	<Run Text="Host IP Address:  192.168.1.1"/>
         	<LineBreak/>
         	<Run Text="Waiting For Player 2..."/>
@@ -30,6 +30,8 @@
         	<Run Text="RACER"/>
         </TextBlock>
         <Image x:Name="CompassImage" Height="204" Margin="139,92,139,0" VerticalAlignment="Top" Source="/Assets/freedo_Compass_rose.png"/>
+        <Button x:Name="WinButton" Content="YOU WIN!!!" HorizontalAlignment="Left" Height="184" Margin="10,291,0,0" VerticalAlignment="Top" Width="460" Background="#BF2EFF00" FontSize="72" Foreground="White" Click="OnClickWin"/>
+        <Button x:Name="LoseButton" Content="YOU LOSE..." HorizontalAlignment="Left" Height="184" Margin="10,291,0,0" VerticalAlignment="Top" Width="460" Background="#BFFF0000" FontSize="72" Foreground="White" Click="OnClickWin"/>
     </DrawingSurfaceBackgroundGrid>
 
 </phone:PhoneApplicationPage>

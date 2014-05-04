@@ -140,6 +140,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="Models\Treasure.h" />
     <ClInclude Include="NetworkEvents.h" />
     <ClInclude Include="SimpleNetworkGameComponent.h" />
     <ClInclude Include="GameRenderer.h" />
@@ -175,6 +176,7 @@
     <Image Include="Textures\DungeonCeling.dds" />
     <Image Include="Textures\DungeonFloor.dds" />
     <Image Include="Textures\DungeonWall.dds" />
+    <Image Include="Textures\GoldPile.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

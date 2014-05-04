@@ -17,7 +17,7 @@ using System.Windows.Threading;
 // ALL C++/CX classes MUST MUST MUST be in this namespace!!!!!!
 using PhoneDirect3DXamlAppComponent;
 using ClientConnectCallback;
-
+using GameEndedCallback;
 
 // My netwoking communication classes
 //using GameClient; // STUPID!!! why didnt they tell me not to use my own namespaces!!!
@@ -29,6 +29,9 @@ namespace PhoneDirect3DXamlAppInterop
     {
         // C++ game renderer + more
         private Direct3DBackground m_d3dBackground = null;
+
+        // Callback for win condition
+        private CGameEndedCallback _gameEnded = null;
 
         // compass data (based on MSDN example)
         private Compass _compass;
@@ -42,6 +45,8 @@ namespace PhoneDirect3DXamlAppInterop
             // hide this item by default
             this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
             this.StatusTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+            this.WinButton.Visibility = System.Windows.Visibility.Collapsed;
+            this.LoseButton.Visibility = System.Windows.Visibility.Collapsed;
 
             // construct compass rendering
             _compass = Compass.GetDefault();
@@ -87,6 +92,7 @@ namespace PhoneDirect3DXamlAppInterop
 
                 // double for tracking compass
                 m_d3dBackground.MagneticNorth = new double();
+                m_d3dBackground.MagneticNorth = double.NaN; // initialize to a NON-Reading
 
                 // Set window bounds in dips
                 m_d3dBackground.WindowBounds = new Windows.Foundation.Size(
@@ -106,6 +112,12 @@ namespace PhoneDirect3DXamlAppInterop
                 // Hook-up native component to DrawingSurfaceBackgroundGrid
                 DrawingSurfaceBackground.SetBackgroundContentProvider(m_d3dBackground.CreateContentProvider());
                 DrawingSurfaceBackground.SetBackgroundManipulationHandler(m_d3dBackground);
+
+                // Create GameOver Callback
+                _gameEnded = new CGameEndedCallback();
+                _gameEnded.Init(Dispatcher, this);
+                //setup the callback object so that we know when the game has ended
+                m_d3dBackground.SetGameOverCallback(_gameEnded);
             }
         }
 
@@ -135,6 +147,7 @@ namespace PhoneDirect3DXamlAppInterop
                 this.JoinButton.Visibility = System.Windows.Visibility.Collapsed;
                 this.HostButton.Visibility = System.Windows.Visibility.Collapsed;
                 this.HostIPTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+                this.TitleTextBlock.Visibility = System.Windows.Visibility.Collapsed;
 
                 // begin the game as the CLIENT
                 this.m_d3dBackground.StartGame(false);
@@ -151,8 +164,8 @@ namespace PhoneDirect3DXamlAppInterop
         private void OnHostGame(object sender, RoutedEventArgs e)
         {
             // shor circuit for now
-            OnNotifyClientConnection("");
-            return;
+            //OnNotifyClientConnection("");
+            //return;
 
             // launch the game server, wait for a client to connect
             string ip;
@@ -204,6 +217,30 @@ namespace PhoneDirect3DXamlAppInterop
 
             // begin the game as the HOST
             this.m_d3dBackground.StartGame(true);
+        }
+
+        // Invoked from C++ to display win condition
+        public void OnNotifyGameOver(string winnar)
+        {
+            if(winnar == "Win")
+                this.WinButton.Visibility = System.Windows.Visibility.Visible;
+            else
+                this.LoseButton.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void OnClickWin(object sender, RoutedEventArgs e)
+        {
+            // both win & lose use this callback, just reset the game
+            this.WinButton.Visibility = System.Windows.Visibility.Collapsed;
+            this.LoseButton.Visibility = System.Windows.Visibility.Collapsed;
+            // re-set game state
+            m_d3dBackground.ResetGame();
+            // Un-Hide the entire menu system
+            this.ServerIPField.Visibility = System.Windows.Visibility.Visible;
+            this.JoinButton.Visibility = System.Windows.Visibility.Visible;
+            this.HostButton.Visibility = System.Windows.Visibility.Visible;
+            this.TitleTextBlock.Visibility = System.Windows.Visibility.Visible;
+            this.HostButton.IsEnabled = true;
         }
     }
 }

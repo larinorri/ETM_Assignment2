@@ -73,20 +73,26 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	if (shading >= TEXTURED)
 	{
 		final = surfaceColor.Sample(wrapSampler, input.uvw.xy);
+		clip(final.a - 0.9f); // remove alpha pixels
 	}
 	if (shading == LIGHTING)
 	{
-		// compute spotlight 0
-		float3 lightDir = lanterns[0].lightPos - input.posW;
-		float3 lightDirN = normalize(lightDir);
-		float surfaceRatio = saturate( dot( -lightDirN, lanterns[0].coneDir ) );
-		float lightAmount = saturate( dot( lightDirN, normalize(input.nrm) ) );
-		lightAmount *= 1 - saturate( length(lightDir) / lanterns[0].radius );
-		lightAmount *= 1 - saturate((lanterns[0].innerCone - surfaceRatio) / 
-									(lanterns[0].innerCone - lanterns[0].outerCone));
-		final.rgb *= lightAmount * lanterns[0].lightColor;
+		float3 totalLight = { 0, 0, 0 };
+		// compute spotlights
+		for (uint i = 0; i < 2; ++i)
+		{
+			float3 lightDir = lanterns[i].lightPos - input.posW;
+			float3 lightDirN = normalize(lightDir);
+			float surfaceRatio = saturate(dot(-lightDirN, lanterns[i].coneDir));
+			float lightAmount = saturate(dot(lightDirN, normalize(input.nrm)));
+			lightAmount *= 1 - saturate(length(lightDir) / lanterns[i].radius);
+			lightAmount *= 1 - saturate((lanterns[i].innerCone - surfaceRatio) /
+										(lanterns[i].innerCone - lanterns[i].outerCone));
+			totalLight += lightAmount * lanterns[i].lightColor;
+		}
+		final.rgb *= totalLight;
 	}
-	
+	// final fragment color
 	return final;
 }
 /*

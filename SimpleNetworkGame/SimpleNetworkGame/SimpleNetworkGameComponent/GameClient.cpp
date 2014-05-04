@@ -2,7 +2,6 @@
 #include "pch.h"
 #include "GameClient.h"
 #include "NetworkEvents.h"
-//#include "windows.h"
 
 // Need to link with Ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
@@ -69,6 +68,19 @@ int GameClient::ConnectThroughSocket(String^ hostForConn, String^* errMsg)
 		return 2;
 	}
 
+	//// disable nagle's algorithim on this socket
+	//BOOL bOptVal = TRUE;
+	//int bOptLen = sizeof (BOOL);
+	//int iResult = setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (char *)&bOptVal, bOptLen);
+	//if (iResult == SOCKET_ERROR) {
+	//	*errMsg = "Failed to set socket options with error:";
+	//	*errMsg += WSAGetLastError();
+	//	freeaddrinfo(servinfo);
+	//	closesocket(sockfd);
+	//	WSACleanup();
+	//	return 2;
+	//}
+
 	//free servinfo struct
 	freeaddrinfo(servinfo);
 
@@ -85,7 +97,7 @@ int GameClient::ConnectThroughSocket(String^ hostForConn, String^* errMsg)
 		NetworkEvents::EVENT_DATA sendEvent, receiveEvent;
 		memset(&sendEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
 		memset(&receiveEvent, 0x0000000, sizeof(NetworkEvents::EVENT_DATA));
-		while (receiveEvent.ID != GAME_EVENT::NETWORK_KILL)
+		while (sendEvent.ID != GAME_EVENT::NETWORK_KILL)
 		{
 			// attempt to receive data from server (only look for events)
 			if (recv(sockfd, (char*)&receiveEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == sizeof(NetworkEvents::EVENT_DATA))
@@ -99,11 +111,19 @@ int GameClient::ConnectThroughSocket(String^ hostForConn, String^* errMsg)
 				if (send(sockfd, (const char*)&sendEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == -1)
 					perror("could not send to server, event dropped");
 			}
+			
+		}
+		//send any remaining outgoing events
+		while (NetworkEvents::GetInstance().PopOutgoingEvent(&sendEvent))
+		{
+			if (send(sockfd, (const char*)&sendEvent, sizeof(NetworkEvents::EVENT_DATA), 0) == -1)
+				perror("could not send to client, event dropped");
 		}
 		// shutdown listen socket
 		closesocket(sockfd);
 		//delete the character array holding our target listener
 		delete[] hostToConnect;
+		//assert(0);
 
 	}));
 	
