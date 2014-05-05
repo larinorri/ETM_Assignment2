@@ -324,13 +324,12 @@ void GameRenderer::Update(float timeTotal, float timeDelta)
 		racer.r[3] = currPos;
 		
 		// TEMP CODE (emulator has no compass so we transfer our own)
-		if (m_host == true)
+		if (m_host == false)
 		{
-			racer = XMMatrixRotationY(timeDelta * 0.2f) * racer;
-			//NetworkEvents::EVENT_DATA remoteCompass;
-			//remoteCompass.ID = GAME_EVENT::COMPASS_SEND;
-			//remoteCompass.matrix[0] = magneticNorth;// our compass reading
-			//NetworkEvents::GetInstance().PushOutgoingEvent(&remoteCompass);
+			NetworkEvents::EVENT_DATA remoteCompass;
+			remoteCompass.ID = GAME_EVENT::COMPASS_SEND;
+			remoteCompass.matrix[0] = magneticNorth;// our compass reading
+			NetworkEvents::GetInstance().PushOutgoingEvent(&remoteCompass);
 		}
 
 		// create Z axis world space velocity vector
